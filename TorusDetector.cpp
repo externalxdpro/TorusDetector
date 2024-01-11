@@ -1,14 +1,15 @@
 #include <fmt/format.h>
 #include <fmt/ranges.h>
-#include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/videoio.hpp>
 #include <vector>
 
+int p8Bit(int num) { return num * 255 / 100; }
+
 class TorusDetectorOptions {
   public:
-    cv::Scalar hsvStart = cv::Scalar(0, 35, 85);
-    cv::Scalar hsvEnd = cv::Scalar(15, 100, 100);
+    cv::Scalar hsvStart = cv::Scalar(0, p8Bit(40), p8Bit(80));
+    cv::Scalar hsvEnd = cv::Scalar(15, p8Bit(100), p8Bit(100));
 
     int blurKernelSize = 7;
 };
@@ -36,11 +37,6 @@ class TorusDetector {
         cv::medianBlur(result, result, config.blurKernelSize);
 
         std::vector<cv::Vec3f> circles;
-
-        cv::Vec3b hsvPixel = inputImage.at<cv::Vec3b>(10, 10);
-        std::cout << "HSV Values: " << static_cast<int>(hsvPixel[0]) << ", "
-                  << static_cast<int>(hsvPixel[1]) << ", "
-                  << static_cast<int>(hsvPixel[2]) << std::endl;
 
         cv::HoughCircles(result, circles, cv::HOUGH_GRADIENT, 1,
                          result.rows / 8, 100, 30, 10, 100);
